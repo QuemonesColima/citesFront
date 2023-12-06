@@ -1,14 +1,12 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, useColorScheme } from 'react-native';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Tabs } from "expo-router";
+import { useColorScheme } from "react-native";
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
+import { darkColors, lightColors } from "../../constants/Theme";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
-import Colors from '../../constants/Colors';
-
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
 }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
@@ -17,39 +15,66 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  let themeToApply = MD3LightTheme;
+  let colorsToApply = lightColors;
+
+  if (colorScheme === "dark") {
+    themeToApply = MD3DarkTheme;
+    colorsToApply = darkColors;
+  }
+
+  const theme = {
+    ...themeToApply,
+    colors: {
+      ...colorsToApply.colors,
+    },
+  };
+
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+    <PaperProvider theme={theme}>
+      <Tabs
+        screenOptions={{
+          tabBarStyle: { backgroundColor: colorsToApply.colors.background },
+          tabBarActiveTintColor: colorsToApply.colors.primary,
+          headerShown: false,
         }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="negocios"
+          options={{
+            title: "Negocios",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons
+                name="place"
+                size={28}
+                color={color}
+                style={{ marginBottom: -3 }}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="perfil"
+          options={{
+            title: "Perfil",
+            tabBarIcon: ({ color }) => (
+              <Ionicons
+                name="calendar"
+                size={28}
+                color={color}
+                style={{ marginBottom: -3 }}
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </PaperProvider>
   );
 }
